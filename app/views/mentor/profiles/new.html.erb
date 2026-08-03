@@ -1,52 +1,54 @@
 <% content_for :title, "Mentor profile — Orbit" %>
 
-<h1 class="text-4xl" style="font-family: Fraunces, serif;"><%= @mentor_profile.persisted? ? "Edit mentor profile" : "Become a mentor" %></h1>
-<p class="mt-2 text-slate-600">Rails stores the marketplace data; Firebase handles live session chat later.</p>
+<h1 class="font-display text-4xl font-semibold tracking-tight text-ink">
+  <%= @mentor_profile.persisted? ? "Edit mentor profile" : "Become a mentor" %>
+</h1>
+<p class="mt-2 text-muted">Publish your expertise, set a rate, and open slots for learners.</p>
 
-<%= form_with model: @mentor_profile, url: (@mentor_profile.persisted? ? mentor_profile_path : mentor_profile_path), method: (@mentor_profile.persisted? ? :patch : :post), class: "mt-8 max-w-xl space-y-4" do |f| %>
+<%= form_with model: @mentor_profile, url: mentor_profile_path, method: (@mentor_profile.persisted? ? :patch : :post), class: "mt-8 max-w-xl space-y-5" do |f| %>
   <% if @mentor_profile.errors.any? %>
-    <div class="border border-rose-700/20 bg-rose-50 p-3 text-sm text-rose-900">
+    <div class="surface border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
       <%= @mentor_profile.errors.full_messages.to_sentence %>
     </div>
   <% end %>
 
   <div>
-    <%= f.label :headline, class: "block text-sm font-medium" %>
-    <%= f.text_field :headline, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2", placeholder: "Staff engineer coaching system design" %>
+    <%= f.label :headline, class: "block text-sm font-medium text-ink" %>
+    <%= f.text_field :headline, class: "field", placeholder: "Staff engineer coaching system design" %>
   </div>
 
   <div>
-    <%= f.label :bio, class: "block text-sm font-medium" %>
-    <%= f.text_area :bio, rows: 5, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2" %>
+    <%= f.label :bio, class: "block text-sm font-medium text-ink" %>
+    <%= f.text_area :bio, rows: 5, class: "field" %>
   </div>
 
   <div class="grid grid-cols-2 gap-4">
     <div>
-      <%= f.label :hourly_rate_cents, "Rate (cents)", class: "block text-sm font-medium" %>
-      <%= f.number_field :hourly_rate_cents, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2" %>
+      <%= f.label :hourly_rate_cents, "Rate (cents)", class: "block text-sm font-medium text-ink" %>
+      <%= f.number_field :hourly_rate_cents, class: "field" %>
     </div>
     <div>
-      <%= f.label :years_experience, class: "block text-sm font-medium" %>
-      <%= f.number_field :years_experience, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2" %>
+      <%= f.label :years_experience, class: "block text-sm font-medium text-ink" %>
+      <%= f.number_field :years_experience, class: "field" %>
     </div>
   </div>
 
   <div>
-    <p class="text-sm font-medium">Skills</p>
+    <p class="text-sm font-medium text-ink">Skills</p>
     <div class="mt-2 flex flex-wrap gap-3">
       <% @skills.each do |skill| %>
-        <label class="inline-flex items-center gap-2 text-sm">
-          <%= check_box_tag "mentor_profile[skill_ids][]", skill.id, @mentor_profile.skill_ids.include?(skill.id) %>
+        <label class="inline-flex items-center gap-2 text-sm text-muted">
+          <%= check_box_tag "mentor_profile[skill_ids][]", skill.id, @mentor_profile.skill_ids.include?(skill.id), class: "accent-[var(--color-accent)]" %>
           <%= skill.name %>
         </label>
       <% end %>
     </div>
   </div>
 
-  <div class="flex items-center gap-2">
-    <%= f.check_box :active %>
+  <div class="flex items-center gap-2 text-sm text-ink">
+    <%= f.check_box :active, class: "accent-[var(--color-accent)]" %>
     <%= f.label :active, "Listed publicly" %>
   </div>
 
-  <%= f.submit class: "rounded-sm bg-slate-900 px-4 py-2 text-sm font-semibold text-white" %>
+  <%= f.submit class: "btn-primary cursor-pointer" %>
 <% end %>

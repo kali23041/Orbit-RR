@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_075302) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_164201) do
   create_table "availability_slots", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "ends_at", null: false
@@ -22,24 +22,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_075302) do
     t.index ["mentor_profile_id"], name: "index_availability_slots_on_mentor_profile_id"
   end
 
+  create_table "booking_notes", force: :cascade do |t|
+    t.integer "author_id", null: false
+    t.text "body", null: false
+    t.integer "booking_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_booking_notes_on_author_id"
+    t.index ["booking_id", "created_at"], name: "index_booking_notes_on_booking_id_and_created_at"
+    t.index ["booking_id"], name: "index_booking_notes_on_booking_id"
+  end
+
   create_table "bookings", force: :cascade do |t|
     t.integer "amount_cents", null: false
     t.integer "availability_slot_id", null: false
     t.datetime "created_at", null: false
     t.string "currency", default: "usd", null: false
     t.string "firebase_chat_path"
+    t.string "firestore_room_id", null: false
     t.integer "learner_id", null: false
     t.string "meet_url"
     t.integer "mentor_profile_id", null: false
     t.text "notes"
+    t.datetime "reminder_sent_at"
     t.integer "status", default: 0, null: false
     t.string "stripe_checkout_session_id"
     t.string "stripe_payment_intent_id"
     t.datetime "updated_at", null: false
     t.index ["availability_slot_id"], name: "index_bookings_on_availability_slot_id", unique: true
+    t.index ["firestore_room_id"], name: "index_bookings_on_firestore_room_id", unique: true
     t.index ["learner_id"], name: "index_bookings_on_learner_id"
     t.index ["mentor_profile_id"], name: "index_bookings_on_mentor_profile_id"
     t.index ["stripe_checkout_session_id"], name: "index_bookings_on_stripe_checkout_session_id", unique: true
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "mentor_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["mentor_profile_id"], name: "index_favorites_on_mentor_profile_id"
+    t.index ["user_id", "mentor_profile_id"], name: "index_favorites_on_user_id_and_mentor_profile_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "mentor_profiles", force: :cascade do |t|
@@ -63,6 +87,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_075302) do
     t.index ["mentor_profile_id", "skill_id"], name: "index_mentor_skills_on_mentor_profile_id_and_skill_id", unique: true
     t.index ["mentor_profile_id"], name: "index_mentor_skills_on_mentor_profile_id"
     t.index ["skill_id"], name: "index_mentor_skills_on_skill_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.string "link_path"
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -99,12 +136,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_075302) do
   end
 
   add_foreign_key "availability_slots", "mentor_profiles"
+  add_foreign_key "booking_notes", "bookings"
+  add_foreign_key "booking_notes", "users", column: "author_id"
   add_foreign_key "bookings", "availability_slots"
   add_foreign_key "bookings", "mentor_profiles"
   add_foreign_key "bookings", "users", column: "learner_id"
+  add_foreign_key "favorites", "mentor_profiles"
+  add_foreign_key "favorites", "users"
   add_foreign_key "mentor_profiles", "users"
   add_foreign_key "mentor_skills", "mentor_profiles"
   add_foreign_key "mentor_skills", "skills"
+  add_foreign_key "notifications", "users"
   add_foreign_key "reviews", "bookings"
   add_foreign_key "reviews", "users", column: "reviewer_id"
 end

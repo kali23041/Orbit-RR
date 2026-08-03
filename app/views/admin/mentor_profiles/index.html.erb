@@ -1,0 +1,17 @@
+<% content_for :title, "Admin mentors — Orbit" %>
+<h1 class="font-display text-3xl font-semibold text-ink">Mentor listings</h1>
+<%= link_to "← Admin", admin_root_path, class: "mt-2 inline-block text-sm text-accent hover:underline" %>
+<ul class="mt-6 space-y-3">
+  <% @mentors.each do |mentor| %>
+    <li class="surface flex flex-wrap items-center justify-between gap-3 p-4">
+      <div>
+        <p class="font-medium text-ink"><%= mentor.user.display_name %></p>
+        <p class="text-sm text-muted"><%= mentor.headline %> · <%= mentor.active? ? "active" : "inactive" %></p>
+      </div>
+      <%= button_to (mentor.active? ? "Deactivate" : "Activate"),
+            admin_mentor_profile_path(mentor, active: !mentor.active?),
+            method: :patch,
+            class: "btn-secondary py-2" %>
+    </li>
+  <% end %>
+</ul>

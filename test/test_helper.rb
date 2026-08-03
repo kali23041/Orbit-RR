@@ -4,12 +4,13 @@ require "rails/test_help"
 
 module ActiveSupport
   class TestCase
-    # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)
+    # Fixtures are intentionally unused; tests build records explicitly.
+  end
+end
 
-    # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-    fixtures :all
-
-    # Add more helper methods to be used by all tests here...
+class ActionDispatch::IntegrationTest
+  def sign_in_as(user)
+    post dev_login_url(user)
   end
 end

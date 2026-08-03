@@ -1,0 +1,29 @@
+<% content_for :title, "Admin — Orbit" %>
+
+<h1 class="font-display text-4xl font-semibold text-ink">Admin</h1>
+<p class="mt-2 text-muted">Marketplace overview for moderators.</p>
+
+<div class="mt-8 grid gap-4 sm:grid-cols-4">
+  <div class="surface p-4"><p class="text-xs text-muted">Users</p><p class="font-display text-3xl font-semibold"><%= @users_count %></p></div>
+  <div class="surface p-4"><p class="text-xs text-muted">Bookings</p><p class="font-display text-3xl font-semibold"><%= @bookings_count %></p></div>
+  <div class="surface p-4"><p class="text-xs text-muted">Mentors</p><p class="font-display text-3xl font-semibold"><%= @mentors_count %></p></div>
+  <div class="surface p-4"><p class="text-xs text-muted">Active listings</p><p class="font-display text-3xl font-semibold"><%= @active_mentors %></p></div>
+</div>
+
+<div class="mt-8 flex flex-wrap gap-3">
+  <%= link_to "Users", admin_users_path, class: "btn-secondary" %>
+  <%= link_to "Bookings", admin_bookings_path, class: "btn-secondary" %>
+  <%= link_to "Mentor listings", admin_mentor_profiles_path, class: "btn-secondary" %>
+</div>
+
+<section class="mt-10">
+  <h2 class="font-display text-2xl font-semibold text-ink">Recent bookings</h2>
+  <ul class="mt-4 divide-y divide-[var(--color-line)] border-y border-line">
+    <% @recent_bookings.each do |booking| %>
+      <li class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+        <span>#<%= booking.id %> · <%= booking.learner.display_name %> → <%= booking.mentor_user.display_name %></span>
+        <%= booking_status_badge(booking.status) %>
+      </li>
+    <% end %>
+  </ul>
+</section>

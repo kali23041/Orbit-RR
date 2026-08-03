@@ -17,42 +17,45 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-[#f3efe6] text-slate-900 antialiased" style="font-family: 'Source Sans 3', sans-serif;">
-    <div class="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_#dce8df_0%,_transparent_55%),linear-gradient(180deg,#f3efe6_0%,#ebe4d6_100%)]"></div>
+  <body class="min-h-screen bg-canvas text-ink antialiased">
+    <div class="pointer-events-none fixed inset-0 -z-10 orbit-atmosphere"></div>
 
-    <header class="border-b border-slate-900/10 bg-[#f3efe6]/80 backdrop-blur">
+    <header class="sticky top-0 z-40 border-b border-line/80 bg-canvas/85 backdrop-blur-md">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
         <%= link_to root_path, class: "group flex items-baseline gap-2" do %>
-          <span class="text-2xl font-semibold tracking-tight text-slate-900" style="font-family: Fraunces, serif;">Orbit</span>
-          <span class="hidden text-sm text-slate-600 sm:inline">live skill sessions</span>
+          <span class="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">Orbit</span>
         <% end %>
 
-        <nav class="flex items-center gap-3 text-sm font-medium">
-          <%= link_to "Browse mentors", mentors_path, class: "text-slate-700 hover:text-slate-950" %>
+        <nav class="flex items-center gap-4 sm:gap-5">
+          <%= link_to "Mentors", mentors_path, class: "nav-link" %>
           <% if signed_in? %>
-            <%= link_to "Dashboard", dashboard_path, class: "text-slate-700 hover:text-slate-950" %>
-            <% if current_user.mentoring? %>
-              <%= link_to "Mentor HQ", mentor_dashboard_path, class: "text-slate-700 hover:text-slate-950" %>
-            <% else %>
-              <%= link_to "Become a mentor", new_mentor_profile_path, class: "text-slate-700 hover:text-slate-950" %>
+            <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
+            <%= link_to "Alerts", notifications_path, class: "nav-link hidden sm:inline" %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_root_path, class: "nav-link hidden sm:inline" %>
             <% end %>
-            <%= button_to "Sign out", session_path, method: :delete, class: "rounded-sm bg-slate-900 px-3 py-1.5 text-white hover:bg-slate-800" %>
+            <% if current_user.mentoring? %>
+              <%= link_to "Mentor HQ", mentor_dashboard_path, class: "nav-link hidden sm:inline" %>
+            <% else %>
+              <%= link_to "Teach", new_mentor_profile_path, class: "nav-link hidden sm:inline" %>
+            <% end %>
+            <%= button_to "Sign out", session_path, method: :delete, class: "btn-ink" %>
           <% else %>
             <div data-controller="firebase-auth"
                  data-firebase-auth-configured-value="<%= firebase_configured? %>"
                  data-firebase-auth-config-value="<%= Rails.application.config.x.firebase.client_config.to_json %>">
               <button type="button"
                       data-action="firebase-auth#signIn"
-                      class="rounded-sm bg-[#1f6b4a] px-3 py-1.5 text-white hover:bg-[#18563b]">
+                      class="btn-primary py-2">
                 Sign in
               </button>
-              <p data-firebase-auth-target="status" class="mt-1 text-xs text-rose-700"></p>
+              <p data-firebase-auth-target="status" class="mt-1 max-w-40 text-xs text-rose-700"></p>
             </div>
           <% end %>
         </nav>
@@ -62,20 +65,23 @@
     <% if flash[:notice].present? || flash[:alert].present? %>
       <div class="mx-auto max-w-6xl px-5 pt-4">
         <% if flash[:notice].present? %>
-          <p class="rounded-sm border border-emerald-700/20 bg-emerald-50 px-3 py-2 text-sm text-emerald-900"><%= flash[:notice] %></p>
+          <p class="surface border-teal-200 bg-accent-soft px-3 py-2 text-sm text-accent"><%= flash[:notice] %></p>
         <% end %>
         <% if flash[:alert].present? %>
-          <p class="rounded-sm border border-rose-700/20 bg-rose-50 px-3 py-2 text-sm text-rose-900"><%= flash[:alert] %></p>
+          <p class="surface border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800"><%= flash[:alert] %></p>
         <% end %>
       </div>
     <% end %>
 
-    <main class="mx-auto max-w-6xl px-5 py-10">
+    <main class="mx-auto max-w-6xl px-5 py-10 sm:py-12">
       <%= yield %>
     </main>
 
-    <footer class="mx-auto max-w-6xl px-5 pb-10 text-sm text-slate-600">
-      <p>Orbit — Rails marketplace with Firebase Auth, realtime chat, and Stripe payments.</p>
+    <footer class="border-t border-line">
+      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+        <p class="font-display text-base font-semibold text-ink">Orbit</p>
+        <p>Live skill sessions · Rails marketplace · Firebase realtime</p>
+      </div>
     </footer>
   </body>
 </html>

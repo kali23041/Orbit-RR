@@ -9,5 +9,7 @@ class DashboardsController < ApplicationController
     else
       Booking.none
     end
+    @favorites = current_user.favorited_mentors.includes(:user, :skills)
+    @unread_notifications = current_user.notifications.unread.count
   end
 end

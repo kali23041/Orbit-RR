@@ -1,7 +1,17 @@
 class BookingPolicy < ApplicationPolicy
   def show?
-    return false unless user
+    record.participant?(user)
+  end
 
-    user.admin? || record.learner_id == user.id || record.mentor_profile.user_id == user.id
+  def cancel?
+    show? && record.cancellable?
+  end
+
+  def complete?
+    show? && record.confirmed?
+  end
+
+  def ics?
+    show?
   end
 end

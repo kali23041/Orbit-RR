@@ -1,0 +1,14 @@
+<% content_for :title, "Admin bookings — Orbit" %>
+<h1 class="font-display text-3xl font-semibold text-ink">Bookings</h1>
+<%= link_to "← Admin", admin_root_path, class: "mt-2 inline-block text-sm text-accent hover:underline" %>
+<ul class="mt-6 divide-y divide-[var(--color-line)] border-y border-line">
+  <% @bookings.each do |booking| %>
+    <li class="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+      <div>
+        <p class="font-medium text-ink">#<%= booking.id %> · <%= booking.learner.display_name %> → <%= booking.mentor_user.display_name %></p>
+        <p class="text-muted"><%= l(booking.starts_at, format: :short) %></p>
+      </div>
+      <%= booking_status_badge(booking.status) %>
+    </li>
+  <% end %>
+</ul>

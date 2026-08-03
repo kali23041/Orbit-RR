@@ -1,24 +1,61 @@
 <% content_for :title, "Booking ##{@booking.id} — Orbit" %>
 
 <div class="max-w-2xl">
-  <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#1f6b4a]">Booking</p>
-  <h1 class="mt-2 text-4xl" style="font-family: Fraunces, serif;"><%= @booking.mentor_user.display_name %> × <%= @booking.learner.display_name %></h1>
+  <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Booking</p>
+  <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+    <%= @booking.mentor_user.display_name %> × <%= @booking.learner.display_name %>
+  </h1>
   <div class="mt-4"><%= booking_status_badge(@booking.status) %></div>
 
-  <dl class="mt-8 space-y-3 text-sm">
-    <div class="flex justify-between border-b border-slate-900/10 py-2">
-      <dt class="text-slate-600">When</dt>
-      <dd class="font-medium"><%= l(@booking.starts_at, format: :long) %></dd>
+  <dl class="mt-8 space-y-0 text-sm">
+    <div class="flex justify-between border-b border-line py-3">
+      <dt class="text-muted">When</dt>
+      <dd class="font-medium text-ink"><%= l(@booking.starts_at, format: :long) %></dd>
     </div>
-    <div class="flex justify-between border-b border-slate-900/10 py-2">
-      <dt class="text-slate-600">Amount</dt>
-      <dd class="font-medium"><%= format_money(@booking.amount_cents, @booking.currency) %></dd>
+    <div class="flex justify-between border-b border-line py-3">
+      <dt class="text-muted">Amount</dt>
+      <dd class="font-medium text-accent"><%= format_money(@booking.amount_cents, @booking.currency) %></dd>
     </div>
-    <div class="flex justify-between border-b border-slate-900/10 py-2">
-      <dt class="text-slate-600">Video</dt>
-      <dd><%= link_to "Open Meet link", @booking.meet_url, target: "_blank", rel: "noopener", class: "underline" %></dd>
+    <div class="flex justify-between border-b border-line py-3">
+      <dt class="text-muted">Video</dt>
+      <dd><%= link_to "Open Meet link", @booking.meet_url, target: "_blank", rel: "noopener", class: "font-medium text-ink underline decoration-line underline-offset-2 hover:text-accent" %></dd>
+    </div>
+    <div class="flex justify-between border-b border-line py-3">
+      <dt class="text-muted">Firestore room</dt>
+      <dd class="font-mono text-xs text-ink"><%= @booking.firestore_room_id %></dd>
     </div>
   </dl>
 
-  <%= link_to "Enter live room", booking_room_path(@booking), class: "mt-8 inline-block rounded-sm bg-[#1f6b4a] px-5 py-3 text-sm font-semibold text-white" %>
+  <div class="mt-8 flex flex-wrap gap-2">
+    <%= link_to "Enter live room", booking_room_path(@booking), class: "btn-primary" %>
+    <%= link_to "Add to calendar", ics_booking_path(@booking), class: "btn-secondary" %>
+    <% if @booking.cancellable? %>
+      <%= button_to "Cancel booking", cancel_booking_path(@booking), method: :post, class: "btn-secondary text-rose-700", form: { data: { turbo_confirm: "Cancel this session?" } } %>
+    <% end %>
+    <% if @booking.confirmed? %>
+      <%= button_to "Mark complete", complete_booking_path(@booking), method: :post, class: "btn-ink" %>
+    <% end %>
+  </div>
+
+  <% if @booking.completed? && @booking.learner_id == current_user.id %>
+    <section class="mt-10 surface p-5">
+      <h2 class="font-display text-xl font-semibold text-ink">Leave a review</h2>
+      <% if @booking.review&.persisted? %>
+        <p class="mt-2 text-sm text-muted">You rated this <%= @booking.review.rating %>/5.</p>
+        <p class="mt-1 text-sm text-ink"><%= @booking.review.body %></p>
+      <% else %>
+        <%= form_with model: [@booking, @review], class: "mt-4 space-y-3" do |f| %>
+          <div>
+            <%= f.label :rating, class: "text-sm font-medium" %>
+            <%= f.select :rating, (1..5).to_a, {}, class: "field" %>
+          </div>
+          <div>
+            <%= f.label :body, "Comment", class: "text-sm font-medium" %>
+            <%= f.text_area :body, rows: 3, class: "field" %>
+          </div>
+          <%= f.submit "Submit review", class: "btn-primary cursor-pointer" %>
+        <% end %>
+      <% end %>
+    </section>
+  <% end %>
 </div>

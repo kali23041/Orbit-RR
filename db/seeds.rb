@@ -82,4 +82,13 @@ learner.assign_attributes(
 )
 learner.save!
 
-puts "Done. Mentors: #{MentorProfile.count}, Skills: #{Skill.count}, Learner: #{learner.email}"
+admin = User.find_or_initialize_by(email: "admin@orbit.dev")
+admin.assign_attributes(
+  firebase_uid: "seed-admin-1",
+  name: "Orbit Admin",
+  role: :admin,
+  timezone: "UTC"
+)
+admin.save!
+
+puts "Done. Mentors: #{MentorProfile.count}, Skills: #{Skill.count}, Learner: #{learner.email}, Admin: #{admin.email}"

@@ -1,6 +1,6 @@
 class BookingsController < ApplicationController
   before_action :require_authentication
-  before_action :set_booking, only: %i[show success]
+  before_action :set_booking, only: %i[show success cancel complete ics]
 
   def create
     slot = AvailabilitySlot.bookable.find(params[:availability_slot_id])
@@ -28,12 +28,36 @@ class BookingsController < ApplicationController
 
   def show
     authorize @booking
+    @review = @booking.review || @booking.build_review
   end
 
   def success
     authorize @booking
     @booking.confirm! if @booking.pending_payment?
     redirect_to booking_path(@booking), notice: "Payment received. Your session is confirmed."
+  end
+
+  def cancel
+    authorize @booking
+    Bookings::Cancel.call(booking: @booking, actor: current_user)
+    redirect_to booking_path(@booking), notice: "Booking cancelled."
+  rescue Bookings::Cancel::Error => e
+    redirect_to booking_path(@booking), alert: e.message
+  end
+
+  def complete
+    authorize @booking
+    Bookings::Complete.call(booking: @booking, actor: current_user)
+    redirect_to booking_path(@booking), notice: "Session marked complete. Leave a review!"
+  rescue Bookings::Complete::Error => e
+    redirect_to booking_path(@booking), alert: e.message
+  end
+
+  def ics
+    authorize @booking
+    send_data Bookings::Ics.call(@booking),
+              filename: "orbit-booking-#{@booking.id}.ics",
+              type: "text/calendar"
   end
 
   private

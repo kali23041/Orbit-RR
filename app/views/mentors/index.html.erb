@@ -1,28 +1,61 @@
 <% content_for :title, "Mentors — Orbit" %>
 
-<div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-  <div>
-    <h1 class="text-4xl text-slate-950" style="font-family: Fraunces, serif;">Mentors</h1>
-    <p class="mt-2 text-slate-600">Filter by skill and book an open slot.</p>
-  </div>
-  <div class="flex flex-wrap gap-2">
-    <%= link_to "All", mentors_path, class: "rounded-sm px-3 py-1.5 text-sm #{params[:skill].blank? ? 'bg-slate-900 text-white' : 'border border-slate-900/15 bg-white'}" %>
-    <% @skills.each do |skill| %>
-      <%= link_to skill.name, mentors_path(skill: skill.slug), class: "rounded-sm px-3 py-1.5 text-sm #{params[:skill] == skill.slug ? 'bg-slate-900 text-white' : 'border border-slate-900/15 bg-white'}" %>
-    <% end %>
-  </div>
+<div class="mb-8">
+  <h1 class="font-display text-4xl font-semibold tracking-tight text-ink">Mentors</h1>
+  <p class="mt-2 text-muted">Search by skill, rate, or keyword.</p>
 </div>
 
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-  <% @mentors.each do |mentor| %>
-    <article class="border border-slate-900/10 bg-white/70 p-5">
-      <h2 class="text-xl font-semibold"><%= mentor.user.display_name %></h2>
-      <p class="mt-1 text-sm text-slate-600"><%= mentor.headline %></p>
-      <p class="mt-3 text-xs uppercase tracking-wide text-slate-500"><%= mentor.skills.map(&:name).join(" · ") %></p>
-      <div class="mt-5 flex items-center justify-between">
-        <span class="font-medium text-[#1f6b4a]"><%= format_money(mentor.hourly_rate_cents, mentor.currency) %></span>
-        <%= link_to "View profile", mentor_path(mentor), class: "text-sm font-semibold text-slate-900 underline" %>
-      </div>
-    </article>
-  <% end %>
-</div>
+<%= form_with url: mentors_path, method: :get, class: "mb-8 grid gap-3 surface p-4 sm:grid-cols-4" do %>
+  <div class="sm:col-span-2">
+    <label class="text-xs font-medium text-muted">Search</label>
+    <input type="search" name="q" value="<%= @q %>" placeholder="Name, headline, bio…" class="field">
+  </div>
+  <div>
+    <label class="text-xs font-medium text-muted">Max price (USD)</label>
+    <input type="number" step="1" min="0" name="max_price" value="<%= @max_price %>" class="field" placeholder="150">
+  </div>
+  <div>
+    <label class="text-xs font-medium text-muted">Sort</label>
+    <select name="sort" class="field">
+      <option value="newest" <%= "selected" if @sort == "newest" %>>Newest</option>
+      <option value="rate" <%= "selected" if @sort == "rate" %>>Lowest rate</option>
+      <option value="rating" <%= "selected" if @sort == "rating" %>>Top rated</option>
+    </select>
+  </div>
+  <div class="sm:col-span-4 flex flex-wrap items-end gap-2">
+    <%= link_to "All skills", mentors_path(q: @q, max_price: @max_price, sort: @sort), class: "chip #{@skill.blank? ? 'chip-active' : ''}" %>
+    <% @skills.each do |skill| %>
+      <%= link_to skill.name, mentors_path(q: @q, skill: skill.slug, max_price: @max_price, sort: @sort), class: "chip #{@skill == skill.slug ? 'chip-active' : ''}" %>
+    <% end %>
+    <button type="submit" class="btn-primary ml-auto py-2">Apply</button>
+  </div>
+<% end %>
+
+<% if @mentors.any? %>
+  <div class="border-b border-line">
+    <% @mentors.each do |mentor| %>
+      <%= link_to mentor_path(mentor), class: "mentor-row group grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center" do %>
+        <div>
+          <h2 class="font-display text-xl font-semibold text-ink group-hover:text-accent"><%= mentor.user.display_name %></h2>
+          <p class="mt-1 text-sm text-muted"><%= mentor.headline %></p>
+          <p class="mt-2 text-xs uppercase tracking-[0.12em] text-muted/80">
+            <%= mentor.skills.map(&:name).join(" · ") %>
+            <% if mentor.average_rating %>
+              · ★ <%= mentor.average_rating %>
+            <% end %>
+          </p>
+        </div>
+        <div class="text-left sm:text-right">
+          <p class="font-semibold text-accent"><%= format_money(mentor.hourly_rate_cents, mentor.currency) %></p>
+          <p class="mt-1 text-xs font-medium text-muted">View profile →</p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="surface px-5 py-10 text-center">
+    <p class="font-display text-xl font-semibold text-ink">No mentors matched</p>
+    <p class="mt-2 text-sm text-muted">Try clearing filters or browsing all skills.</p>
+    <%= link_to "Reset filters", mentors_path, class: "btn-secondary mt-4" %>
+  </div>
+<% end %>

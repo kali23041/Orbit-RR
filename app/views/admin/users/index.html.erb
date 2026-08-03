@@ -1,0 +1,17 @@
+<% content_for :title, "Admin users — Orbit" %>
+<h1 class="font-display text-3xl font-semibold text-ink">Users</h1>
+<%= link_to "← Admin", admin_root_path, class: "mt-2 inline-block text-sm text-accent hover:underline" %>
+<table class="mt-6 w-full text-left text-sm">
+  <thead class="border-b border-line text-muted">
+    <tr><th class="py-2">Name</th><th>Email</th><th>Role</th></tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr class="border-b border-line">
+        <td class="py-2 font-medium"><%= user.display_name %></td>
+        <td><%= user.email %></td>
+        <td><%= user.role %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

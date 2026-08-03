@@ -1,35 +1,60 @@
 <% content_for :title, "Dashboard — Orbit" %>
 
-<h1 class="text-4xl text-slate-950" style="font-family: Fraunces, serif;">Hey, <%= current_user.display_name %></h1>
-<p class="mt-2 text-slate-600">Your learner bookings<%= " and mentor queue" if @mentor_profile %>.</p>
+<div class="flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <h1 class="font-display text-4xl font-semibold tracking-tight text-ink">Hey, <%= current_user.display_name %></h1>
+    <p class="mt-2 text-muted">Bookings, favorites, and notifications.</p>
+  </div>
+  <%= link_to notifications_path, class: "btn-secondary" do %>
+    Notifications<% if @unread_notifications.to_i > 0 %> (<%= @unread_notifications %>)<% end %>
+  <% end %>
+</div>
 
 <section class="mt-10">
-  <h2 class="text-2xl" style="font-family: Fraunces, serif;">Your sessions</h2>
+  <h2 class="font-display text-2xl font-semibold text-ink">Your sessions</h2>
   <% if @learner_bookings.any? %>
-    <ul class="mt-4 space-y-3">
+    <ul class="mt-4 divide-y divide-[var(--color-line)] border-y border-line">
       <% @learner_bookings.each do |booking| %>
-        <li class="flex flex-col gap-3 border border-slate-900/10 bg-white/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <li class="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p class="font-semibold"><%= booking.mentor_user.display_name %></p>
-            <p class="text-sm text-slate-600"><%= l(booking.starts_at, format: :long) %></p>
+            <p class="font-display text-lg font-semibold text-ink"><%= booking.mentor_user.display_name %></p>
+            <p class="text-sm text-muted"><%= l(booking.starts_at, format: :long) %></p>
             <div class="mt-2"><%= booking_status_badge(booking.status) %></div>
           </div>
-          <div class="flex gap-2">
-            <%= link_to "Details", booking_path(booking), class: "rounded-sm border border-slate-900/15 px-3 py-2 text-sm" %>
-            <%= link_to "Live room", booking_room_path(booking), class: "rounded-sm bg-[#1f6b4a] px-3 py-2 text-sm font-semibold text-white" %>
+          <div class="flex flex-wrap gap-2">
+            <%= link_to "Details", booking_path(booking), class: "btn-secondary py-2" %>
+            <%= link_to "Live room", booking_room_path(booking), class: "btn-primary py-2" %>
+            <%= link_to "ICS", ics_booking_path(booking), class: "btn-secondary py-2" %>
           </div>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <p class="mt-4 text-sm text-slate-600">No bookings yet. <%= link_to "Browse mentors", mentors_path, class: "underline" %>.</p>
+    <p class="mt-4 text-sm text-muted">No bookings yet. <%= link_to "Browse mentors", mentors_path, class: "font-semibold text-accent hover:underline" %>.</p>
   <% end %>
 </section>
 
+<% if @favorites.any? %>
+  <section class="mt-10">
+    <h2 class="font-display text-2xl font-semibold text-ink">Favorites</h2>
+    <ul class="mt-4 space-y-2">
+      <% @favorites.each do |mentor| %>
+        <li class="flex items-center justify-between border-b border-line py-3">
+          <div>
+            <p class="font-medium text-ink"><%= mentor.user.display_name %></p>
+            <p class="text-sm text-muted"><%= mentor.headline %></p>
+          </div>
+          <%= link_to "Open", mentor_path(mentor), class: "text-sm font-semibold text-accent hover:underline" %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
 <% unless @mentor_profile %>
-  <section class="mt-10 border border-dashed border-slate-900/20 bg-white/40 p-5">
-    <h2 class="text-xl" style="font-family: Fraunces, serif;">Teach on Orbit</h2>
-    <p class="mt-1 text-sm text-slate-600">Publish a mentor profile and open availability slots.</p>
-    <%= link_to "Create mentor profile", new_mentor_profile_path, class: "mt-4 inline-block rounded-sm bg-slate-900 px-4 py-2 text-sm font-semibold text-white" %>
+  <section class="mt-10 border border-dashed border-line bg-surface/70 p-5">
+    <h2 class="font-display text-xl font-semibold text-ink">Teach on Orbit</h2>
+    <p class="mt-1 text-sm text-muted">Publish a mentor profile and open availability slots.</p>
+    <%= link_to "Create mentor profile", new_mentor_profile_path, class: "btn-ink mt-4" %>
   </section>
 <% end %>

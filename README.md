@@ -1,107 +1,146 @@
 # Orbit
 
-**Live skill-session marketplace** — a portfolio Rails app with Firebase Auth, realtime session chat, and optional Stripe Checkout.
+[![CI](https://github.com/oraclekartik/RR/actions/workflows/ci.yml/badge.svg)](https://github.com/oraclekartik/RR/actions/workflows/ci.yml)
+![Rails](https://img.shields.io/badge/Rails-8.1-red)
+![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Built as a **single codebase** (Rails 8 + Hotwire + Tailwind). Rails owns bookings, money, and authorization. Firebase owns identity and live chat/presence.
+**Orbit** is an open-source **live skill-session marketplace** built as a single Rails 8 app.
 
-## Why this stack
+Rails owns bookings, money, reviews, and authorization. Firebase owns identity and Firestore-powered live rooms (chat, presence, typing, attachments).
 
-| Concern | System | Why |
-|--------|--------|-----|
-| Profiles, slots, bookings, reviews | Rails + SQLite (Postgres-ready) | Strong domain modeling for interviews |
-| Sign-in | Firebase Auth → Rails session | Modern auth without rolling your own |
-| Session chat + presence | Firebase Realtime Database | Realtime without Action Cable complexity |
-| Payments | Stripe Checkout | Real marketplace signal |
-| AuthZ | Pundit | Standard Rails hiring expectation |
+> Portfolio-ready reference app: Hotwire, Pundit, Solid Queue, Stripe (optional), and a production-shaped Firestore schema with security rules in-repo.
+
+## Screenshots
+
+| Home | Mentors |
+|------|---------|
+| ![Home](docs/screenshots/01-home.png) | ![Mentors](docs/screenshots/02-mentors.png) |
+
+| Mentor profile | Dashboard |
+|----------------|-----------|
+| ![Mentor](docs/screenshots/03-mentor-show.png) | ![Dashboard](docs/screenshots/04-dashboard.png) |
+
+| Booking | Live room |
+|---------|-----------|
+| ![Booking](docs/screenshots/05-booking.png) | ![Live room](docs/screenshots/06-live-room.png) |
+
+![Mentor HQ](docs/screenshots/07-mentor-hq.png)
+
+Regenerate screenshots (Chrome required, server on :3000):
+
+```bash
+bin/rails orbit:screenshots
+```
+
+## Features
+
+- Firebase Auth (Google) → verified Rails session
+- Mentor profiles, skills, availability slots
+- Booking lifecycle: create, cancel, complete, ICS calendar download
+- Optional Stripe Checkout
+- Reviews after completed sessions
+- Favorites + in-app notifications
+- Private Rails session notes
+- Firestore live room: chat, presence, typing, file attachments
+- Mentor search / skill filters / sort
+- Admin dashboard (users, bookings, listing moderation)
+- Solid Queue session reminder emails
+- Minitest coverage for core flows
+- MIT license + contributor docs
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| App | Rails 8.1 · Hotwire · Tailwind · Importmap |
+| Domain DB | SQLite (dev) · Postgres-ready |
+| Auth | Firebase Auth + JWKS verification |
+| Realtime | Cloud Firestore |
+| Files | Firebase Storage |
+| Jobs | Solid Queue |
+| Payments | Stripe Checkout (optional) |
+| AuthZ | Pundit |
 
 ## Quick start
 
 ```bash
-# Ruby 3.4+ (Homebrew: /opt/homebrew/opt/ruby/bin)
+git clone https://github.com/oraclekartik/RR.git
+cd RR
 cp .env.example .env
+# Ruby 3.4+ on PATH (Homebrew: /opt/homebrew/opt/ruby/bin)
 bin/setup
 bin/rails db:seed
-bin/dev
+bin/rails server
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open **http://localhost:3000** (use `localhost`, not `127.0.0.1`, once Firebase Auth is enabled).
 
 ### Demo without Firebase
 
-1. Open the home page  
-2. Use **Dev login** (development only) as `Jordan Lee` (learner) or a mentor  
-3. Browse mentors → book a slot → open the **Live room**
+1. Home → **Dev login** (local/test only)
+2. Browse mentors → book a slot → open **Live room**
+3. Sign in as `Orbit Admin` for `/admin`
 
-Without Stripe keys, bookings confirm immediately (great for demos).
+Without Stripe keys, bookings confirm immediately.
 
 ### Wire Firebase
 
-1. Create a Firebase project  
-2. Enable **Google** sign-in  
-3. Create a **Realtime Database**  
-4. Copy web config values into `.env`  
-5. Restart `bin/dev`  
-6. Use **Sign in** in the nav  
+1. Create a Firebase project
+2. Enable **Authentication → Google**
+3. Create **Firestore** + **Storage**
+4. Add authorized domain: `localhost` (not `127.0.0.1:3000`)
+5. Copy web config into `.env`
+6. Deploy rules:
 
-Suggested Realtime Database rules for demos (tighten for production):
-
-```json
-{
-  "rules": {
-    "bookings": {
-      "$bookingId": {
-        ".read": "auth != null",
-        ".write": "auth != null"
-      }
-    }
-  }
-}
+```bash
+firebase deploy --only firestore:rules,storage
 ```
+
+Details: [docs/FIRESTORE.md](docs/FIRESTORE.md)
 
 ### Wire Stripe (optional)
 
-Set `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and optionally `STRIPE_WEBHOOK_SECRET`.  
-Webhook endpoint: `POST /stripe/webhook` for `checkout.session.completed`.
+Set `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`.  
+Webhook: `POST /stripe/webhook` (`checkout.session.completed`).
 
-## App map
+## Firestore shape
 
-```
-app/
-  models/           User, MentorProfile, AvailabilitySlot, Booking, Review, Skill
-  services/
-    firebase/       ID token verification (JWKS)
-    users/          Find-or-create from Firebase claims
-    bookings/       Reserve slot + create booking
-    payments/       Stripe Checkout session
-  controllers/      Marketplace + mentor HQ + session rooms
-  javascript/controllers/
-    firebase_auth_controller.js
-    session_chat_controller.js
+```text
+rooms/{bookingId}
+  messages/{id}   # text | system | file
+  presence/{uid}
+  typing/{uid}
+user_public/{uid}
 ```
 
-### Main flows
+Storage: `rooms/{bookingId}/attachments/...`  
+See [docs/FIRESTORE.md](docs/FIRESTORE.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-1. **Sign in** — Firebase ID token verified in `SessionsController`  
-2. **Become a mentor** — profile + skills + availability slots  
-3. **Book** — `Bookings::Create` reserves the slot; Stripe if configured  
-4. **Live room** — Firebase chat at `booking.firebase_chat_path`
+## Project map
 
-## Portfolio talking points
+```text
+app/models/                 domain
+app/services/bookings/      create/cancel/complete/ICS
+app/services/firebase/      ID token verifier
+app/javascript/firebase/    shared Firebase bootstrap
+app/javascript/controllers/ auth + Firestore room
+firestore.rules             member-scoped security
+storage.rules               attachment limits
+docs/                       architecture + screenshots
+```
 
-- Clear boundary: **Rails = source of truth for money/bookings**, **Firebase = live collaboration**  
-- Service objects + Pundit policies  
-- Idempotent-ish slot reservation to prevent double booking  
-- Dev login path so reviewers can try the product in under a minute  
+## Tests
 
-## Next upgrades (great resume commits)
+```bash
+bin/rails test
+```
 
-- [ ] Review form after `completed` bookings  
-- [ ] Solid Queue reminder emails 15 minutes before session  
-- [ ] Firebase Storage for session attachments  
-- [ ] FCM push notifications  
-- [ ] Switch development DB to PostgreSQL  
-- [ ] RSpec request specs for booking + auth bridge  
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).  
+Security: [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT — use this freely in your portfolio.
+[MIT](LICENSE)

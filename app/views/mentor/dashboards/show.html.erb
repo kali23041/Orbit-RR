@@ -2,56 +2,56 @@
 
 <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
   <div>
-    <h1 class="text-4xl" style="font-family: Fraunces, serif;">Mentor HQ</h1>
-    <p class="mt-2 text-slate-600"><%= mentor_profile.headline %></p>
+    <h1 class="font-display text-4xl font-semibold tracking-tight text-ink">Mentor HQ</h1>
+    <p class="mt-2 text-muted"><%= mentor_profile.headline %></p>
   </div>
-  <%= link_to "Edit profile", edit_mentor_profile_path, class: "rounded-sm border border-slate-900/15 bg-white px-4 py-2 text-sm font-semibold" %>
+  <%= link_to "Edit profile", edit_mentor_profile_path, class: "btn-secondary" %>
 </div>
 
 <div class="grid gap-8 lg:grid-cols-2">
-  <section class="border border-slate-900/10 bg-white/70 p-5">
-    <h2 class="text-2xl" style="font-family: Fraunces, serif;">Add availability</h2>
+  <section class="surface p-5 sm:p-6">
+    <h2 class="font-display text-2xl font-semibold text-ink">Add availability</h2>
     <%= form_with url: mentor_slots_path, scope: :availability_slot, class: "mt-4 space-y-3" do |f| %>
       <div>
-        <%= f.label :starts_at, class: "block text-sm font-medium" %>
-        <%= f.datetime_local_field :starts_at, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2" %>
+        <%= f.label :starts_at, class: "block text-sm font-medium text-ink" %>
+        <%= f.datetime_local_field :starts_at, class: "field" %>
       </div>
       <div>
-        <%= f.label :ends_at, class: "block text-sm font-medium" %>
-        <%= f.datetime_local_field :ends_at, class: "mt-1 w-full rounded-sm border border-slate-900/15 bg-white px-3 py-2" %>
+        <%= f.label :ends_at, class: "block text-sm font-medium text-ink" %>
+        <%= f.datetime_local_field :ends_at, class: "field" %>
       </div>
-      <%= f.submit "Add slot", class: "rounded-sm bg-slate-900 px-4 py-2 text-sm font-semibold text-white" %>
+      <%= f.submit "Add slot", class: "btn-ink" %>
     <% end %>
 
     <ul class="mt-6 space-y-2">
       <% @slots.each do |slot| %>
-        <li class="flex items-center justify-between gap-3 border border-slate-900/10 bg-[#f8f5ee] px-3 py-2 text-sm">
-          <span><%= l(slot.starts_at, format: :short) %> · <%= slot.status %></span>
+        <li class="flex items-center justify-between gap-3 border border-line bg-canvas/80 px-3 py-2 text-sm">
+          <span class="text-ink"><%= l(slot.starts_at, format: :short) %> · <span class="text-muted"><%= slot.status %></span></span>
           <% if slot.open? %>
-            <%= button_to "Remove", mentor_slot_path(slot), method: :delete, class: "text-rose-700 underline" %>
+            <%= button_to "Remove", mentor_slot_path(slot), method: :delete, class: "text-rose-700 hover:underline" %>
           <% end %>
         </li>
       <% end %>
     </ul>
   </section>
 
-  <section class="border border-slate-900/10 bg-white/70 p-5">
-    <h2 class="text-2xl" style="font-family: Fraunces, serif;">Incoming bookings</h2>
+  <section class="surface p-5 sm:p-6">
+    <h2 class="font-display text-2xl font-semibold text-ink">Incoming bookings</h2>
     <% if @bookings.any? %>
       <ul class="mt-4 space-y-3">
         <% @bookings.each do |booking| %>
-          <li class="border border-slate-900/10 bg-[#f8f5ee] p-3">
-            <p class="font-medium"><%= booking.learner.display_name %></p>
-            <p class="text-sm text-slate-600"><%= l(booking.starts_at, format: :long) %></p>
+          <li class="border border-line bg-canvas/80 p-3">
+            <p class="font-medium text-ink"><%= booking.learner.display_name %></p>
+            <p class="text-sm text-muted"><%= l(booking.starts_at, format: :long) %></p>
             <div class="mt-2 flex items-center justify-between">
               <%= booking_status_badge(booking.status) %>
-              <%= link_to "Room", booking_room_path(booking), class: "text-sm font-semibold underline" %>
+              <%= link_to "Room", booking_room_path(booking), class: "text-sm font-semibold text-accent hover:underline" %>
             </div>
           </li>
         <% end %>
       </ul>
     <% else %>
-      <p class="mt-4 text-sm text-slate-600">No bookings yet.</p>
+      <p class="mt-4 text-sm text-muted">No bookings yet.</p>
     <% end %>
   </section>
 </div>

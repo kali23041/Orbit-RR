@@ -9,6 +9,7 @@ Rails.application.configure do
     storageBucket: ENV.fetch("FIREBASE_STORAGE_BUCKET", ""),
     messagingSenderId: ENV.fetch("FIREBASE_MESSAGING_SENDER_ID", ""),
     appId: ENV.fetch("FIREBASE_APP_ID", ""),
+    measurementId: ENV.fetch("FIREBASE_MEASUREMENT_ID", ""),
     databaseURL: ENV.fetch("FIREBASE_DATABASE_URL", "")
   }.freeze
 end

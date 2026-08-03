@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { getFirebaseAuth, loadAuthHelpers } from "firebase/app"
 
 // Signs in with Firebase Auth (Google), then posts the ID token to Rails.
 export default class extends Controller {
@@ -12,16 +13,13 @@ export default class extends Controller {
     this.clearStatus()
 
     if (!this.configuredValue || !this.configValue?.apiKey) {
-      this.setStatus("Add Firebase keys to .env, then restart bin/dev. Or use Dev login on the home page.")
+      this.setStatus("Add Firebase keys to .env, then restart. Or use Dev login on the home page.")
       return
     }
 
     try {
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js")
-      const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js")
-
-      const app = initializeApp(this.configValue)
-      const auth = getAuth(app)
+      const auth = await getFirebaseAuth(this.configValue)
+      const { GoogleAuthProvider, signInWithPopup } = await loadAuthHelpers()
       const result = await signInWithPopup(auth, new GoogleAuthProvider())
       const idToken = await result.user.getIdToken()
 

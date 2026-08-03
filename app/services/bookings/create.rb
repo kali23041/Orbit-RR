@@ -30,8 +30,14 @@ module Bookings
           status: payment_required? ? :pending_payment : :confirmed
         )
 
-        # Reserve the slot immediately to prevent double-booking.
         slot.booked!
+        Notifications::Notify.call(
+          user: slot.mentor_profile.user,
+          kind: "booking_created",
+          title: "New booking from #{learner.display_name}",
+          body: "Session on #{booking.starts_at.strftime('%b %-d at %H:%M UTC')}",
+          link_path: "/bookings/#{booking.id}"
+        )
         booking
       end
     end
