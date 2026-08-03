@@ -1,133 +1,106 @@
 # Orbit
 
-[![CI](https://github.com/oraclekartik/RR/actions/workflows/ci.yml/badge.svg)](https://github.com/oraclekartik/RR/actions/workflows/ci.yml)
-![Rails](https://img.shields.io/badge/Rails-8.1-red)
-![Firebase](https://img.shields.io/badge/Firebase-Auth%20%2B%20Firestore-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
+Rails app for booking short mentorship sessions. Mentors list their skills and availability, learners book a slot, then both jump into a live room (chat + notes + a Meet link).
 
-**Orbit** is an open-source **live skill-session marketplace** built as a single Rails 8 app.
+I built this — [Kartik Sabale](https://kartiksabale.com).
 
-Rails owns bookings, money, reviews, and authorization. Firebase owns identity and Firestore-powered live rooms (chat, presence, typing, attachments).
-
-> Portfolio-ready reference app: Hotwire, Pundit, Solid Queue, Stripe (optional), and a production-shaped Firestore schema with security rules in-repo.
+Auth is Firebase (Google). Bookings and payments live in Rails. Chat/presence use Firestore.
 
 ## Screenshots
 
-| Home | Mentors |
-|------|---------|
+| | |
+|---|---|
 | ![Home](docs/screenshots/01-home.png) | ![Mentors](docs/screenshots/02-mentors.png) |
-
-| Mentor profile | Dashboard |
-|----------------|-----------|
 | ![Mentor](docs/screenshots/03-mentor-show.png) | ![Dashboard](docs/screenshots/04-dashboard.png) |
-
-| Booking | Live room |
-|---------|-----------|
 | ![Booking](docs/screenshots/05-booking.png) | ![Live room](docs/screenshots/06-live-room.png) |
 
 ![Mentor HQ](docs/screenshots/07-mentor-hq.png)
 
-Regenerate screenshots (Chrome required, server on :3000):
-
 ```bash
+# optional: refresh screenshots (Chrome + server on :3000)
 bin/rails orbit:screenshots
 ```
 
-## Features
+## What it does
 
-- Firebase Auth (Google) → verified Rails session
-- Mentor profiles, skills, availability slots
-- Booking lifecycle: create, cancel, complete, ICS calendar download
-- Optional Stripe Checkout
-- Reviews after completed sessions
-- Favorites + in-app notifications
-- Private Rails session notes
-- Firestore live room: chat, presence, typing, file attachments
-- Mentor search / skill filters / sort
-- Admin dashboard (users, bookings, listing moderation)
-- Solid Queue session reminder emails
-- Minitest coverage for core flows
-- MIT license + contributor docs
+- Google sign-in (Firebase → Rails session)
+- Mentor profiles, skills, open slots
+- Book / cancel / complete a session; download an `.ics`
+- Stripe Checkout if you set keys (otherwise booking just confirms)
+- Reviews, favorites, in-app notifications
+- Private notes on a booking (Rails)
+- Live room: Firestore chat, who’s online, typing, file uploads
+- Search / filter mentors
+- Simple admin area
+- Reminder emails via Solid Queue
 
 ## Stack
 
-| Layer | Choice |
-|-------|--------|
-| App | Rails 8.1 · Hotwire · Tailwind · Importmap |
-| Domain DB | SQLite (dev) · Postgres-ready |
-| Auth | Firebase Auth + JWKS verification |
-| Realtime | Cloud Firestore |
-| Files | Firebase Storage |
-| Jobs | Solid Queue |
-| Payments | Stripe Checkout (optional) |
-| AuthZ | Pundit |
+Rails 8 + Hotwire + Tailwind. SQLite locally (Postgres is fine later). Firebase Auth, Firestore, Storage. Pundit. Stripe optional.
 
-## Quick start
+## Setup
 
 ```bash
 git clone https://github.com/oraclekartik/RR.git
 cd RR
 cp .env.example .env
-# Ruby 3.4+ on PATH (Homebrew: /opt/homebrew/opt/ruby/bin)
 bin/setup
 bin/rails db:seed
 bin/rails server
 ```
 
-Open **http://localhost:3000** (use `localhost`, not `127.0.0.1`, once Firebase Auth is enabled).
+Open http://localhost:3000
 
-### Demo without Firebase
+Ruby 3.4+ helps. On macOS Homebrew Ruby is usually at `/opt/homebrew/opt/ruby/bin`.
 
-1. Home → **Dev login** (local/test only)
-2. Browse mentors → book a slot → open **Live room**
-3. Sign in as `Orbit Admin` for `/admin`
+### Trying it without Firebase
 
-Without Stripe keys, bookings confirm immediately.
+Use **Dev login** on the home page (local only). Book a mentor, open the room. Log in as Orbit Admin for `/admin`.
 
-### Wire Firebase
+### Firebase
 
-1. Create a Firebase project
-2. Enable **Authentication → Google**
-3. Create **Firestore** + **Storage**
-4. Add authorized domain: `localhost` (not `127.0.0.1:3000`)
-5. Copy web config into `.env`
+1. New Firebase project
+2. Auth → Google on
+3. Create Firestore + Storage
+4. Authorized domains: add `localhost` (not `127.0.0.1:3000`)
+5. Paste the web config into `.env`
 6. Deploy rules:
 
 ```bash
 firebase deploy --only firestore:rules,storage
 ```
 
-Details: [docs/FIRESTORE.md](docs/FIRESTORE.md)
+More detail in [docs/FIRESTORE.md](docs/FIRESTORE.md).
 
-### Wire Stripe (optional)
+### Stripe (optional)
 
-Set `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`.  
-Webhook: `POST /stripe/webhook` (`checkout.session.completed`).
+`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and maybe `STRIPE_WEBHOOK_SECRET`.  
+Webhook endpoint: `POST /stripe/webhook` for `checkout.session.completed`.
 
-## Firestore shape
+## Firestore layout
 
 ```text
 rooms/{bookingId}
-  messages/{id}   # text | system | file
+  messages/{id}
   presence/{uid}
   typing/{uid}
 user_public/{uid}
 ```
 
-Storage: `rooms/{bookingId}/attachments/...`  
+Files go under `rooms/{bookingId}/attachments/...`  
 See [docs/FIRESTORE.md](docs/FIRESTORE.md) and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Project map
+## Layout of the repo
 
 ```text
-app/models/                 domain
-app/services/bookings/      create/cancel/complete/ICS
-app/services/firebase/      ID token verifier
-app/javascript/firebase/    shared Firebase bootstrap
-app/javascript/controllers/ auth + Firestore room
-firestore.rules             member-scoped security
-storage.rules               attachment limits
-docs/                       architecture + screenshots
+app/models/
+app/services/bookings/
+app/services/firebase/
+app/javascript/firebase/
+app/javascript/controllers/
+firestore.rules
+storage.rules
+docs/
 ```
 
 ## Tests
@@ -138,8 +111,11 @@ bin/rails test
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).  
-Security: [SECURITY.md](SECURITY.md).
+[CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [SECURITY.md](SECURITY.md)
+
+## Made by
+
+Kartik Sabale — [kartiksabale.com](https://kartiksabale.com)
 
 ## License
 

@@ -5,10 +5,12 @@
     <section class="surface p-5 sm:p-6">
       <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Session room</p>
       <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-ink">Live collaboration</h1>
-      <p class="mt-3 text-sm text-muted">
-        <%= @booking.mentor_user.display_name %> · <%= @booking.learner.display_name %>
-      </p>
-      <p class="mt-2 text-sm text-muted"><%= l(@booking.starts_at, format: :long) %></p>
+      <div class="mt-4 flex flex-wrap gap-3 text-sm text-muted">
+        <span class="inline-flex items-center gap-2"><%= avatar_chip_for(@booking.mentor_user) %> <%= @booking.mentor_user.display_name %></span>
+        <span class="text-line">·</span>
+        <span class="inline-flex items-center gap-2"><%= avatar_chip_for(@booking.learner) %> <%= @booking.learner.display_name %></span>
+      </div>
+      <p class="mt-3 text-sm text-muted"><%= l(@booking.starts_at, format: :long) %></p>
       <p class="mt-4"><%= booking_status_badge(@booking.status) %></p>
       <div class="mt-6 flex flex-wrap gap-2">
         <%= link_to "Open video", @booking.meet_url, target: "_blank", rel: "noopener", class: "btn-secondary" %>
@@ -25,14 +27,21 @@
         <%= f.text_area :body, rows: 3, class: "field", placeholder: "Prep notes, follow-ups…" %>
         <%= f.submit "Save note", class: "btn-ink cursor-pointer" %>
       <% end %>
-      <ul class="mt-4 space-y-3">
-        <% @notes.each do |note| %>
-          <li class="border-b border-line pb-3 text-sm">
-            <p class="font-medium text-ink"><%= note.author.display_name %></p>
-            <p class="mt-1 text-muted whitespace-pre-line"><%= note.body %></p>
-          </li>
-        <% end %>
-      </ul>
+      <% if @notes.any? %>
+        <ul class="mt-4 space-y-3">
+          <% @notes.each do |note| %>
+            <li class="border-b border-line pb-3 text-sm">
+              <div class="flex items-center gap-2">
+                <%= avatar_chip_for(note.author) %>
+                <p class="font-medium text-ink"><%= note.author.display_name %></p>
+              </div>
+              <p class="mt-2 text-muted whitespace-pre-line"><%= note.body %></p>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-4 text-sm text-muted">No notes yet.</p>
+      <% end %>
     </section>
   </div>
 

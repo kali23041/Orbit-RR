@@ -3,9 +3,15 @@
   <head>
     <title><%= content_for(:title) || "Orbit — Live skill sessions" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Orbit helps you book focused 1:1 skill sessions with working engineers. Built with Rails and Firebase." %>">
+    <meta name="author" content="Kartik Sabale">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Orbit">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta property="og:title" content="<%= content_for(:title) || "Orbit — Live skill sessions" %>">
+    <meta property="og:description" content="Book focused mentorship sessions. Rails marketplace with Firebase Auth and Firestore live rooms.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -26,49 +32,96 @@
   <body class="min-h-screen bg-canvas text-ink antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 orbit-atmosphere"></div>
 
-    <header class="sticky top-0 z-40 border-b border-line/80 bg-canvas/85 backdrop-blur-md">
-      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
+    <header class="sticky top-0 z-40 border-b border-line/80 bg-canvas/90 backdrop-blur-md" data-controller="nav">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5">
         <%= link_to root_path, class: "group flex items-baseline gap-2" do %>
           <span class="font-display text-2xl font-bold tracking-tight text-ink sm:text-[1.75rem]">Orbit</span>
         <% end %>
 
-        <nav class="flex items-center gap-4 sm:gap-5">
+        <nav class="hidden items-center gap-5 md:flex">
           <%= link_to "Mentors", mentors_path, class: "nav-link" %>
           <% if signed_in? %>
             <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
-            <%= link_to "Alerts", notifications_path, class: "nav-link hidden sm:inline" %>
+            <%= link_to "Alerts", notifications_path, class: "nav-link" %>
             <% if current_user.admin? %>
-              <%= link_to "Admin", admin_root_path, class: "nav-link hidden sm:inline" %>
+              <%= link_to "Admin", admin_root_path, class: "nav-link" %>
             <% end %>
             <% if current_user.mentoring? %>
-              <%= link_to "Mentor HQ", mentor_dashboard_path, class: "nav-link hidden sm:inline" %>
+              <%= link_to "Mentor HQ", mentor_dashboard_path, class: "nav-link" %>
             <% else %>
-              <%= link_to "Teach", new_mentor_profile_path, class: "nav-link hidden sm:inline" %>
+              <%= link_to "Teach", new_mentor_profile_path, class: "nav-link" %>
             <% end %>
-            <%= button_to "Sign out", session_path, method: :delete, class: "btn-ink" %>
+            <div class="flex items-center gap-2 border-l border-line pl-4">
+              <%= avatar_chip_for(current_user) %>
+              <span class="max-w-28 truncate text-sm font-medium text-ink"><%= current_user.display_name %></span>
+              <%= button_to "Sign out", session_path, method: :delete, class: "btn-ink" %>
+            </div>
           <% else %>
             <div data-controller="firebase-auth"
                  data-firebase-auth-configured-value="<%= firebase_configured? %>"
                  data-firebase-auth-config-value="<%= Rails.application.config.x.firebase.client_config.to_json %>">
-              <button type="button"
-                      data-action="firebase-auth#signIn"
-                      class="btn-primary py-2">
-                Sign in
-              </button>
-              <p data-firebase-auth-target="status" class="mt-1 max-w-40 text-xs text-rose-700"></p>
+              <button type="button" data-action="firebase-auth#signIn" class="btn-primary py-2">Sign in</button>
+              <p data-firebase-auth-target="status" class="mt-1 max-w-48 text-xs text-rose-700"></p>
             </div>
           <% end %>
         </nav>
+
+        <button type="button"
+                class="inline-flex items-center justify-center rounded-md border border-line bg-surface p-2 md:hidden"
+                data-action="nav#toggle"
+                aria-label="Toggle menu">
+          <span data-nav-target="openIcon" class="text-sm font-semibold text-ink">Menu</span>
+          <span data-nav-target="closeIcon" class="hidden text-sm font-semibold text-ink">Close</span>
+        </button>
+      </div>
+
+      <div data-nav-target="panel" class="hidden border-t border-line bg-canvas md:hidden" aria-hidden="true">
+        <div class="mx-auto flex max-w-6xl flex-col gap-1 px-5 py-3">
+          <%= link_to "Mentors", mentors_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+          <% if signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+            <%= link_to "Alerts", notifications_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin", admin_root_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+            <% end %>
+            <% if current_user.mentoring? %>
+              <%= link_to "Mentor HQ", mentor_dashboard_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+            <% else %>
+              <%= link_to "Teach", new_mentor_profile_path, class: "rounded-md px-2 py-2 text-sm font-medium text-ink hover:bg-white", data: { action: "nav#close" } %>
+            <% end %>
+            <div class="mt-2 flex items-center justify-between border-t border-line pt-3">
+              <div class="flex items-center gap-2">
+                <%= avatar_chip_for(current_user) %>
+                <span class="text-sm font-medium"><%= current_user.display_name %></span>
+              </div>
+              <%= button_to "Sign out", session_path, method: :delete, class: "btn-ink" %>
+            </div>
+          <% else %>
+            <div class="mt-2 border-t border-line pt-3"
+                 data-controller="firebase-auth"
+                 data-firebase-auth-configured-value="<%= firebase_configured? %>"
+                 data-firebase-auth-config-value="<%= Rails.application.config.x.firebase.client_config.to_json %>">
+              <button type="button" data-action="firebase-auth#signIn" class="btn-primary w-full">Sign in</button>
+              <p data-firebase-auth-target="status" class="mt-2 text-xs text-rose-700"></p>
+            </div>
+          <% end %>
+        </div>
       </div>
     </header>
 
     <% if flash[:notice].present? || flash[:alert].present? %>
-      <div class="mx-auto max-w-6xl px-5 pt-4">
+      <div class="mx-auto max-w-6xl space-y-2 px-5 pt-4">
         <% if flash[:notice].present? %>
-          <p class="surface border-teal-200 bg-accent-soft px-3 py-2 text-sm text-accent"><%= flash[:notice] %></p>
+          <div class="flash-banner flash-banner-notice" data-controller="flash" role="status">
+            <p><%= flash[:notice] %></p>
+            <button type="button" class="text-xs font-semibold uppercase tracking-wide opacity-70 hover:opacity-100" data-action="flash#dismiss" aria-label="Dismiss">Close</button>
+          </div>
         <% end %>
         <% if flash[:alert].present? %>
-          <p class="surface border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800"><%= flash[:alert] %></p>
+          <div class="flash-banner flash-banner-alert" data-controller="flash" role="alert">
+            <p><%= flash[:alert] %></p>
+            <button type="button" class="text-xs font-semibold uppercase tracking-wide opacity-70 hover:opacity-100" data-action="flash#dismiss" aria-label="Dismiss">Close</button>
+          </div>
         <% end %>
       </div>
     <% end %>
@@ -77,10 +130,38 @@
       <%= yield %>
     </main>
 
-    <footer class="border-t border-line">
-      <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-        <p class="font-display text-base font-semibold text-ink">Orbit</p>
-        <p>Live skill sessions · Rails marketplace · Firebase realtime</p>
+    <footer class="mt-8 border-t border-line bg-surface/50">
+      <div class="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-3">
+        <div>
+          <p class="font-display text-lg font-semibold text-ink">Orbit</p>
+          <p class="mt-2 text-sm leading-relaxed text-muted">Focused skill sessions with people who already ship.</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Product</p>
+          <ul class="mt-3 space-y-2">
+            <li><%= link_to "Mentors", mentors_path, class: "footer-link" %></li>
+            <li><%= link_to "Teach on Orbit", new_mentor_profile_path, class: "footer-link" %></li>
+            <% if signed_in? %>
+              <li><%= link_to "Dashboard", dashboard_path, class: "footer-link" %></li>
+            <% end %>
+          </ul>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Developer</p>
+          <p class="mt-3 text-sm text-ink">
+            Built by <%= portfolio_link(class: "font-semibold text-accent hover:underline") %>
+          </p>
+          <p class="mt-1 text-sm text-muted">Portfolio &amp; case studies</p>
+          <p class="mt-3">
+            <%= link_to "kartiksabale.com", ApplicationHelper::PORTFOLIO_URL, target: "_blank", rel: "noopener noreferrer", class: "footer-link font-medium text-ink underline underline-offset-2" %>
+          </p>
+        </div>
+      </div>
+      <div class="border-t border-line">
+        <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>© <%= Time.current.year %> Orbit · Open source learning project</p>
+          <p>Rails · Firebase Auth · Firestore</p>
+        </div>
       </div>
     </footer>
   </body>

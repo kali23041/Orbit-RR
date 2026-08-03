@@ -3,9 +3,12 @@
 <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
   <section>
     <div class="flex flex-wrap items-start justify-between gap-3">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Mentor</p>
-        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl"><%= @mentor.user.display_name %></h1>
+      <div class="flex items-start gap-4">
+        <%= avatar_chip_for(@mentor.user, size_class: "avatar-chip h-14 w-14 text-base") %>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Mentor</p>
+          <h1 class="mt-1 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl"><%= @mentor.user.display_name %></h1>
+        </div>
       </div>
       <% if signed_in? && current_user.id != @mentor.user_id %>
         <% if @favorited %>
@@ -15,7 +18,7 @@
         <% end %>
       <% end %>
     </div>
-    <p class="mt-3 text-lg text-muted"><%= @mentor.headline %></p>
+    <p class="mt-4 text-lg text-muted"><%= @mentor.headline %></p>
     <% if @mentor.average_rating %>
       <p class="mt-2 text-sm font-medium text-ink">★ <%= @mentor.average_rating %> · <%= @mentor.reviews_count %> reviews</p>
     <% end %>
@@ -31,7 +34,7 @@
     </p>
   </section>
 
-  <section class="surface p-5 sm:p-6">
+  <section class="surface p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
     <h2 class="font-display text-2xl font-semibold text-ink">Open slots</h2>
     <% if @slots.any? %>
       <ul class="mt-4 space-y-3">
@@ -50,19 +53,24 @@
         <% end %>
       </ul>
     <% else %>
-      <p class="mt-4 text-sm text-muted">No open slots right now.</p>
+      <div class="empty-state mt-4 py-8">
+        <p class="text-sm text-muted">No open slots right now.</p>
+      </div>
     <% end %>
   </section>
 </div>
 
 <% if @reviews.any? %>
   <section class="mt-14 border-t border-line pt-10">
-    <h2 class="font-display text-2xl font-semibold text-ink">Reviews</h2>
+    <h2 class="page-title">Reviews</h2>
     <ul class="mt-4 space-y-3">
       <% @reviews.each do |review| %>
         <li class="border-b border-line py-4">
-          <p class="font-medium text-ink"><%= review.rating %>/5 · <%= review.reviewer.display_name %></p>
-          <p class="mt-1 text-sm text-muted"><%= review.body %></p>
+          <div class="flex items-center gap-2">
+            <%= avatar_chip_for(review.reviewer) %>
+            <p class="font-medium text-ink"><%= review.rating %>/5 · <%= review.reviewer.display_name %></p>
+          </div>
+          <p class="mt-2 text-sm text-muted"><%= review.body %></p>
         </li>
       <% end %>
     </ul>

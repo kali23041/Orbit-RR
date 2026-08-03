@@ -52,3 +52,7 @@ User 1─* Notification
 - `app/javascript/firebase` — shared Firebase bootstrap
 - `app/javascript/controllers` — Stimulus (auth + Firestore room)
 - `firestore.rules` / `storage.rules` — security rules for OSS deploy
+
+---
+
+Designed & built by [Kartik Sabale](https://kartiksabale.com).

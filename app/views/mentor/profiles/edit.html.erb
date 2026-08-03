@@ -1,13 +1,13 @@
 <% content_for :title, "Mentor profile — Orbit" %>
 
-<h1 class="font-display text-4xl font-semibold tracking-tight text-ink">
+<h1 class="page-title">
   <%= @mentor_profile.persisted? ? "Edit mentor profile" : "Become a mentor" %>
 </h1>
-<p class="mt-2 text-muted">Publish your expertise, set a rate, and open slots for learners.</p>
+<p class="page-subtitle">Publish your expertise, set a rate, and open slots for learners.</p>
 
 <%= form_with model: @mentor_profile, url: mentor_profile_path, method: (@mentor_profile.persisted? ? :patch : :post), class: "mt-8 max-w-xl space-y-5" do |f| %>
   <% if @mentor_profile.errors.any? %>
-    <div class="surface border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+    <div class="flash-banner flash-banner-alert">
       <%= @mentor_profile.errors.full_messages.to_sentence %>
     </div>
   <% end %>

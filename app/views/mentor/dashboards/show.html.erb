@@ -2,8 +2,8 @@
 
 <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
   <div>
-    <h1 class="font-display text-4xl font-semibold tracking-tight text-ink">Mentor HQ</h1>
-    <p class="mt-2 text-muted"><%= mentor_profile.headline %></p>
+    <h1 class="page-title">Mentor HQ</h1>
+    <p class="page-subtitle"><%= mentor_profile.headline %></p>
   </div>
   <%= link_to "Edit profile", edit_mentor_profile_path, class: "btn-secondary" %>
 </div>
@@ -23,16 +23,22 @@
       <%= f.submit "Add slot", class: "btn-ink" %>
     <% end %>
 
-    <ul class="mt-6 space-y-2">
-      <% @slots.each do |slot| %>
-        <li class="flex items-center justify-between gap-3 border border-line bg-canvas/80 px-3 py-2 text-sm">
-          <span class="text-ink"><%= l(slot.starts_at, format: :short) %> · <span class="text-muted"><%= slot.status %></span></span>
-          <% if slot.open? %>
-            <%= button_to "Remove", mentor_slot_path(slot), method: :delete, class: "text-rose-700 hover:underline" %>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
+    <% if @slots.any? %>
+      <ul class="mt-6 space-y-2">
+        <% @slots.each do |slot| %>
+          <li class="flex items-center justify-between gap-3 border border-line bg-canvas/80 px-3 py-2 text-sm">
+            <span class="text-ink"><%= l(slot.starts_at, format: :short) %> · <span class="text-muted"><%= slot.status %></span></span>
+            <% if slot.open? %>
+              <%= button_to "Remove", mentor_slot_path(slot), method: :delete, class: "text-rose-700 hover:underline" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="empty-state mt-6 py-8">
+        <p class="text-sm text-muted">No upcoming slots yet.</p>
+      </div>
+    <% end %>
   </section>
 
   <section class="surface p-5 sm:p-6">
@@ -41,8 +47,11 @@
       <ul class="mt-4 space-y-3">
         <% @bookings.each do |booking| %>
           <li class="border border-line bg-canvas/80 p-3">
-            <p class="font-medium text-ink"><%= booking.learner.display_name %></p>
-            <p class="text-sm text-muted"><%= l(booking.starts_at, format: :long) %></p>
+            <div class="flex items-center gap-2">
+              <%= avatar_chip_for(booking.learner) %>
+              <p class="font-medium text-ink"><%= booking.learner.display_name %></p>
+            </div>
+            <p class="mt-2 text-sm text-muted"><%= l(booking.starts_at, format: :long) %></p>
             <div class="mt-2 flex items-center justify-between">
               <%= booking_status_badge(booking.status) %>
               <%= link_to "Room", booking_room_path(booking), class: "text-sm font-semibold text-accent hover:underline" %>
@@ -51,7 +60,9 @@
         <% end %>
       </ul>
     <% else %>
-      <p class="mt-4 text-sm text-muted">No bookings yet.</p>
+      <div class="empty-state mt-4 py-8">
+        <p class="text-sm text-muted">No bookings yet.</p>
+      </div>
     <% end %>
   </section>
 </div>

@@ -1,7 +1,10 @@
 <% content_for :title, "Notifications — Orbit" %>
 
 <div class="mb-6 flex items-center justify-between gap-3">
-  <h1 class="font-display text-3xl font-semibold text-ink">Notifications</h1>
+  <div>
+    <h1 class="page-title">Notifications</h1>
+    <p class="page-subtitle">Booking updates and reminders.</p>
+  </div>
   <%= button_to "Mark all read", read_all_notifications_path, method: :post, class: "btn-secondary py-2" %>
 </div>
 
@@ -23,5 +26,8 @@
     <% end %>
   </ul>
 <% else %>
-  <p class="text-sm text-muted">You’re all caught up.</p>
+  <div class="empty-state">
+    <p class="font-display text-lg font-semibold text-ink">You’re all caught up</p>
+    <p class="mt-2 text-sm text-muted">New booking activity will show up here.</p>
+  </div>
 <% end %>

@@ -1,8 +1,8 @@
 <% content_for :title, "Mentors — Orbit" %>
 
 <div class="mb-8">
-  <h1 class="font-display text-4xl font-semibold tracking-tight text-ink">Mentors</h1>
-  <p class="mt-2 text-muted">Search by skill, rate, or keyword.</p>
+  <h1 class="page-title">Mentors</h1>
+  <p class="page-subtitle">Search by skill, rate, or keyword.</p>
 </div>
 
 <%= form_with url: mentors_path, method: :get, class: "mb-8 grid gap-3 surface p-4 sm:grid-cols-4" do %>
@@ -34,7 +34,8 @@
 <% if @mentors.any? %>
   <div class="border-b border-line">
     <% @mentors.each do |mentor| %>
-      <%= link_to mentor_path(mentor), class: "mentor-row group grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center" do %>
+      <%= link_to mentor_path(mentor), class: "mentor-row group grid gap-3 sm:grid-cols-[auto_1fr_auto] sm:items-center" do %>
+        <%= avatar_chip_for(mentor.user, size_class: "avatar-chip h-10 w-10 text-sm") %>
         <div>
           <h2 class="font-display text-xl font-semibold text-ink group-hover:text-accent"><%= mentor.user.display_name %></h2>
           <p class="mt-1 text-sm text-muted"><%= mentor.headline %></p>
@@ -53,9 +54,9 @@
     <% end %>
   </div>
 <% else %>
-  <div class="surface px-5 py-10 text-center">
+  <div class="empty-state">
     <p class="font-display text-xl font-semibold text-ink">No mentors matched</p>
     <p class="mt-2 text-sm text-muted">Try clearing filters or browsing all skills.</p>
-    <%= link_to "Reset filters", mentors_path, class: "btn-secondary mt-4" %>
+    <%= link_to "Reset filters", mentors_path, class: "btn-secondary mt-5" %>
   </div>
 <% end %>
