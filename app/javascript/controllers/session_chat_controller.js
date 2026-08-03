@@ -6,7 +6,6 @@ import {
   loadStorageHelpers
 } from "firebase/app"
 
-// Firestore live room: messages, presence, typing, attachments.
 export default class extends Controller {
   static targets = ["messages", "input", "status", "presence", "typing", "file"]
   static values = {

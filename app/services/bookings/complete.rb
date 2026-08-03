@@ -15,7 +15,6 @@ module Bookings
 
     def call
       raise Error, "Not allowed" unless booking.participant?(actor)
-      # Allow mentors/learners to complete once the session window started (demo-friendly).
       raise Error, "Booking is not confirmed" unless booking.confirmed?
 
       booking.complete!

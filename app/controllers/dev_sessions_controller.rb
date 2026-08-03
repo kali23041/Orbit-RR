@@ -1,4 +1,4 @@
-# Development-only shortcut so the app is demoable before Firebase is wired.
+# Local sign-in when Firebase isn't set up yet.
 class DevSessionsController < ApplicationController
   def create
     user = User.find(params[:id])

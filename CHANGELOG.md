@@ -3,15 +3,17 @@
 ## Unreleased
 
 ### Added
-- Firestore live rooms (chat, presence, typing, attachments)
-- Booking cancel / complete lifecycle + ICS download
-- Reviews, favorites, private booking notes, in-app notifications
-- Mentor search / filters / sort
-- Admin dashboard for users, bookings, mentor listings
-- Solid Queue reminder job + booking mailers
-- Open-source docs, MIT license, Firebase rules package
-- Minitest coverage for booking, search, auth bridge
+
+- Firestore live rooms (chat, presence, typing, uploads)
+- Cancel / complete bookings + ICS download
+- Reviews, favorites, notes, notifications
+- Mentor search
+- Admin pages
+- Reminder job + mailers
+- Docs, MIT license, Firebase rules
+- Basic Minitest coverage
 
 ### Changed
-- Replaced Realtime Database chat with Cloud Firestore
-- Booking rooms keyed as `bookings/{id}`
+
+- Chat moved from Realtime Database to Firestore
+- Rooms keyed as `bookings/{id}`

@@ -1,30 +1,28 @@
-# Contributing to Orbit
+# Contributing
 
-Thanks for helping improve this open-source Rails + Firebase marketplace demo.
+Thanks for poking at Orbit.
 
-## Development setup
+## Setup
 
 1. Ruby 3.4+
-2. `cp .env.example .env` and add Firebase web config
+2. `cp .env.example .env` and drop in Firebase keys if you have them
 3. `bin/setup && bin/rails db:seed`
-4. `bin/rails server` (or `bin/dev` if Tailwind watch works in your environment)
-5. Open http://localhost:3000 — use **Dev login** without Firebase
+4. `bin/rails server`
+5. http://localhost:3000 — Dev login works without Firebase
 
-## Guidelines
+## Notes
 
-- Keep **Rails** as the source of truth for bookings, money, and reviews
-- Keep **Firestore** for live room collaboration only
-- Prefer small, focused pull requests
-- Add/adjust Minitest coverage for behavior changes
-- Do not commit `.env`, credentials, or service-account keys
+- Put bookings / money / reviews in Rails
+- Keep chat stuff in Firestore
+- Small PRs are easier to review
+- Run `bin/rails test` when you change behavior
+- Don't commit `.env` or service account keys
 
-## Pull requests
+## PRs
 
-1. Branch from `main`
-2. Run `bin/rails test`
-3. Describe the “why” in the PR body
-4. Include screenshots for UI changes when practical
+1. Branch off `main`
+2. `bin/rails test`
+3. Say why you changed it
+4. Screenshots help for UI tweaks
 
-## Code of conduct
-
-Be respectful. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Be decent — see [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

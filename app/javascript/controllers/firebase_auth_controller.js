@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { getFirebaseAuth, loadAuthHelpers } from "firebase/app"
 
-// Signs in with Firebase Auth (Google), then posts the ID token to Rails.
 export default class extends Controller {
   static targets = ["status"]
   static values = {

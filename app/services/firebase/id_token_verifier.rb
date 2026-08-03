@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module Firebase
-  # Verifies Firebase Auth ID tokens using Google's JWKS.
-  # Docs: https://firebase.google.com/docs/auth/admin/verify-id-tokens
+  # https://firebase.google.com/docs/auth/admin/verify-id-tokens
   class IdTokenVerifier
     CERTS_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
     CACHE_KEY = "firebase/id_token_certs"

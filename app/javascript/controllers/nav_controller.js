@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Mobile navigation disclosure for production header.
 export default class extends Controller {
   static targets = ["panel", "openIcon", "closeIcon"]
   static values = { open: { type: Boolean, default: false } }

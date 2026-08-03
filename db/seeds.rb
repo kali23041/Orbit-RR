@@ -13,8 +13,8 @@ mentors = [
   {
     email: "ava@orbit.dev",
     name: "Ava Chen",
-    headline: "Staff Rails engineer · API design & Hotwire",
-    bio: "I help mid-level engineers ship cleaner Rails apps: boundaries, background jobs, and Hotwire UX that feels instant.",
+    headline: "Rails & Hotwire",
+    bio: "Happy to pair on controllers that got messy, background jobs, and making Turbo feel snappy. Bring a real PR if you can.",
     rate: 9000,
     skill_names: [ "Ruby on Rails", "Hotwire", "PostgreSQL" ],
     years: 10
@@ -22,8 +22,8 @@ mentors = [
   {
     email: "marcus@orbit.dev",
     name: "Marcus Cole",
-    headline: "System design for product engineers",
-    bio: "Ex-fintech. We will sketch trade-offs, failure modes, and a practical architecture you can defend in interviews.",
+    headline: "System design chats",
+    bio: "Used to work in fintech. We can whiteboard a design, talk about what breaks, and keep it practical.",
     rate: 12000,
     skill_names: [ "System Design", "Interview Prep", "PostgreSQL" ],
     years: 12
@@ -31,8 +31,8 @@ mentors = [
   {
     email: "priya@orbit.dev",
     name: "Priya Nair",
-    headline: "Career coaching for backend developers",
-    bio: "Resume narrative, portfolio projects, and mock behavioral loops focused on Rails roles.",
+    headline: "Career coaching for backend folks",
+    bio: "Storytelling on resumes, picking projects that actually show signal, and mock chats for Rails-ish roles.",
     rate: 7000,
     skill_names: [ "Career Coaching", "Interview Prep", "Ruby on Rails" ],
     years: 8

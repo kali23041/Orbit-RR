@@ -3,13 +3,13 @@
   <head>
     <title><%= content_for(:title) || "Orbit — Live skill sessions" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Orbit helps you book focused 1:1 skill sessions with working engineers. Built with Rails and Firebase." %>">
+    <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Book short mentorship sessions. Rails + Firebase." %>">
     <meta name="author" content="Kartik Sabale">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Orbit">
     <meta name="mobile-web-app-capable" content="yes">
     <meta property="og:title" content="<%= content_for(:title) || "Orbit — Live skill sessions" %>">
-    <meta property="og:description" content="Book focused mentorship sessions. Rails marketplace with Firebase Auth and Firestore live rooms.">
+    <meta property="og:description" content="Short mentorship sessions. Rails app with Firebase auth and Firestore chat.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <%= csrf_meta_tags %>
@@ -134,7 +134,7 @@
       <div class="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-3">
         <div>
           <p class="font-display text-lg font-semibold text-ink">Orbit</p>
-          <p class="mt-2 text-sm leading-relaxed text-muted">Focused skill sessions with people who already ship.</p>
+          <p class="mt-2 text-sm text-muted">Focused sessions with people who ship.</p>
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Product</p>
@@ -147,11 +147,10 @@
           </ul>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Developer</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Made by</p>
           <p class="mt-3 text-sm text-ink">
-            Built by <%= portfolio_link(class: "font-semibold text-accent hover:underline") %>
+            <%= portfolio_link(class: "font-semibold text-accent hover:underline") %>
           </p>
-          <p class="mt-1 text-sm text-muted">Portfolio &amp; case studies</p>
           <p class="mt-3">
             <%= link_to "kartiksabale.com", ApplicationHelper::PORTFOLIO_URL, target: "_blank", rel: "noopener noreferrer", class: "footer-link font-medium text-ink underline underline-offset-2" %>
           </p>
@@ -159,8 +158,8 @@
       </div>
       <div class="border-t border-line">
         <div class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© <%= Time.current.year %> Orbit · Open source learning project</p>
-          <p>Rails · Firebase Auth · Firestore</p>
+          <p>© <%= Time.current.year %> Orbit</p>
+          <p>Rails + Firebase</p>
         </div>
       </div>
     </footer>

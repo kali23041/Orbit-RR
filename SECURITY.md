@@ -1,24 +1,20 @@
-# Security Policy
+# Security
 
-## Supported versions
+This is a learning / portfolio project. Don't treat it as hardened production software out of the box.
 
-This is an educational / portfolio open-source app. Use at your own risk in production.
+## Reporting issues
 
-## Reporting a vulnerability
+Please don't file public issues for security bugs. Use a private GitHub advisory or email the maintainer with:
 
-Please **do not** open a public issue for security problems.
+- what happened
+- how to reproduce it
+- how bad it is
 
-Email the maintainer or open a private GitHub security advisory with:
+## Before you ship this for real
 
-- Description of the issue
-- Steps to reproduce
-- Impact assessment
-
-## Hardening checklist before production
-
-- Restrict Firebase Auth authorized domains
-- Deploy strict [`firestore.rules`](firestore.rules) and [`storage.rules`](storage.rules)
-- Use PostgreSQL instead of SQLite
-- Configure Stripe webhooks with signing secrets
-- Remove development `dev_login` routes
-- Rotate any keys that were ever committed or shared publicly
+- Lock down Firebase authorized domains
+- Deploy the rules in this repo (`firestore.rules`, `storage.rules`)
+- Prefer Postgres over SQLite
+- Use signed Stripe webhooks
+- Turn off `dev_login`
+- Rotate any keys that ever leaked

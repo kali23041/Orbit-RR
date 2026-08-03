@@ -1,43 +1,44 @@
 # Architecture
 
-Orbit is a **single Rails 8 codebase** that demonstrates a clean split between transactional domain data and realtime collaboration.
+Rails holds the real data (users, bookings, money). Firestore is only for the live room while a session is going on.
 
-## System split
+## Who does what
 
-| Concern | System | Why |
-|--------|--------|-----|
-| Users, mentors, slots, bookings, reviews, favorites, notes | Rails + SQLite (Postgres-ready) | Strong domain modeling, Pundit, money |
-| Identity | Firebase Auth → Rails session | Modern auth without rolling password storage |
-| Live room chat / presence / typing | Cloud Firestore | Member-scoped realtime collaboration |
-| Attachments | Firebase Storage | Files beside room messages |
-| Payments | Stripe Checkout (optional) | Marketplace signal; demos work without keys |
-| Reminders | Solid Queue + Action Mailer | Background jobs without Redis |
+| Thing | Where |
+|--------|--------|
+| Mentors, slots, bookings, reviews, favorites, notes | Rails + SQLite (or Postgres) |
+| Sign-in | Firebase Auth, then a Rails session |
+| Chat / presence / typing | Firestore |
+| File uploads in chat | Firebase Storage |
+| Payments | Stripe Checkout if configured |
+| Reminders | Solid Queue + mailers |
 
-## Request flows
+## Sign-in
 
-### Sign-in
-1. Browser signs in with Firebase Google popup
-2. Client posts ID token to `POST /session`
-3. Rails verifies token via Google JWKS (`Firebase::IdTokenVerifier`)
-4. `Users::FindOrCreateFromFirebase` upserts the user and stores `session[:user_id]`
+1. Google popup via Firebase
+2. Browser posts the ID token to `POST /session`
+3. Rails checks it (`Firebase::IdTokenVerifier`)
+4. User is created/updated and `session[:user_id]` is set
 
-### Booking
-1. Learner books an open `AvailabilitySlot`
-2. `Bookings::Create` reserves the slot and creates a booking with `firestore_room_id = bookings/{id}`
-3. Optional Stripe Checkout; otherwise booking is confirmed immediately
-4. Mentor receives an in-app notification
+## Booking
 
-### Live room
-1. Rails authorizes participants and renders membership UIDs
-2. Client creates/merges Firestore `rooms/{id}` with learner/mentor UIDs
-3. Messages / presence / typing live under that room document
-4. Private session notes stay in Rails (`booking_notes`)
+1. Learner picks an open slot
+2. `Bookings::Create` locks the slot and sets `firestore_room_id` to `bookings/{id}`
+3. Stripe if keys exist; otherwise it's confirmed right away
+4. Mentor gets a notification
 
-## ERD (simplified)
+## Live room
+
+1. Rails makes sure both people belong on the booking
+2. Client writes/merges `rooms/{id}` with their Firebase UIDs
+3. Messages, presence, typing live under that room
+4. Private notes stay in Rails (`booking_notes`)
+
+## Rough ERD
 
 ```text
 User 1─1 MentorProfile 1─* AvailabilitySlot
-User 1─* Booking(as learner)
+User 1─* Booking (learner)
 MentorProfile 1─* Booking
 Booking 1─1 Review
 Booking 1─* BookingNote
@@ -45,14 +46,12 @@ User 1─* Favorite *─1 MentorProfile
 User 1─* Notification
 ```
 
-## Key paths
+## Where to look
 
-- `app/models` — domain
-- `app/services` — booking lifecycle, payments, notifications
-- `app/javascript/firebase` — shared Firebase bootstrap
-- `app/javascript/controllers` — Stimulus (auth + Firestore room)
-- `firestore.rules` / `storage.rules` — security rules for OSS deploy
+- `app/models`
+- `app/services`
+- `app/javascript/firebase`
+- `app/javascript/controllers`
+- `firestore.rules` / `storage.rules`
 
----
-
-Designed & built by [Kartik Sabale](https://kartiksabale.com).
+Made by [Kartik Sabale](https://kartiksabale.com).

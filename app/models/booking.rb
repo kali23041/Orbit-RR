@@ -78,7 +78,6 @@ class Booking < ApplicationRecord
     end
   end
 
-  # Legacy readers for older views/docs
   def firebase_chat_path
     firestore_room_id
   end
