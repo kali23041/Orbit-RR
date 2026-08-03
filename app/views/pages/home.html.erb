@@ -1,0 +1,60 @@
+<% content_for :title, "Orbit — Book live skill sessions" %>
+
+<section class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+  <div class="space-y-6">
+    <p class="text-sm font-semibold uppercase tracking-[0.18em] text-[#1f6b4a]">Portfolio marketplace</p>
+    <h1 class="max-w-xl text-5xl leading-[1.05] text-slate-950 sm:text-6xl" style="font-family: Fraunces, serif;">
+      Book a focused session with someone who already ships.
+    </h1>
+    <p class="max-w-lg text-lg text-slate-700">
+      Orbit is a single Rails codebase: Postgres-ready bookings and money in Rails, Firebase for auth + live session chat.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <%= link_to "Browse mentors", mentors_path, class: "rounded-sm bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800" %>
+      <%= link_to "Become a mentor", new_mentor_profile_path, class: "rounded-sm border border-slate-900/20 bg-white/50 px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-white" %>
+    </div>
+  </div>
+
+  <div class="relative overflow-hidden rounded-sm border border-slate-900/10 bg-[#123528] p-6 text-[#e7f2ec] shadow-[0_30px_80px_-40px_rgba(18,53,40,0.9)]">
+    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#2f9b6a]/30 blur-2xl"></div>
+    <p class="text-sm uppercase tracking-[0.16em] text-[#9dceb8]">Live room preview</p>
+    <p class="mt-4 text-3xl" style="font-family: Fraunces, serif;">Rails + Firebase chat</p>
+    <ul class="mt-6 space-y-3 text-sm text-[#c6e0d4]">
+      <li>Firebase Auth → Rails session</li>
+      <li>Realtime Database messages per booking</li>
+      <li>Stripe Checkout when keys are present</li>
+    </ul>
+  </div>
+</section>
+
+<section class="mt-16">
+  <div class="mb-6 flex items-end justify-between gap-4">
+    <div>
+      <h2 class="text-3xl text-slate-950" style="font-family: Fraunces, serif;">Featured mentors</h2>
+      <p class="mt-1 text-slate-600">Seed data so you can demo the flow immediately.</p>
+    </div>
+    <%= link_to "View all", mentors_path, class: "text-sm font-semibold text-[#1f6b4a] hover:underline" %>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <% @mentors.each do |mentor| %>
+      <%= link_to mentor_path(mentor), class: "block border border-slate-900/10 bg-white/60 p-5 transition hover:border-slate-900/30 hover:bg-white" do %>
+        <p class="text-lg font-semibold text-slate-950"><%= mentor.user.display_name %></p>
+        <p class="mt-1 text-sm text-slate-600"><%= mentor.headline %></p>
+        <p class="mt-4 text-sm font-medium text-[#1f6b4a]"><%= format_money(mentor.hourly_rate_cents, mentor.currency) %> / session</p>
+      <% end %>
+    <% end %>
+  </div>
+</section>
+
+<% if Rails.env.development? && !signed_in? && User.any? %>
+  <section class="mt-16 border border-dashed border-slate-900/20 bg-white/40 p-5">
+    <h2 class="text-xl" style="font-family: Fraunces, serif;">Dev login</h2>
+    <p class="mt-1 text-sm text-slate-600">Use these until Firebase is configured.</p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <% User.limit(5).each do |user| %>
+        <%= button_to "As #{user.display_name} (#{user.role})", dev_login_path(user), method: :post, class: "rounded-sm border border-slate-900/15 bg-white px-3 py-1.5 text-sm hover:bg-slate-50" %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

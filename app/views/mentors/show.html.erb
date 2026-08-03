@@ -1,0 +1,53 @@
+<% content_for :title, "#{@mentor.user.display_name} — Orbit" %>
+
+<div class="grid gap-10 lg:grid-cols-[1fr_0.9fr]">
+  <section>
+    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#1f6b4a]">Mentor</p>
+    <h1 class="mt-2 text-4xl text-slate-950" style="font-family: Fraunces, serif;"><%= @mentor.user.display_name %></h1>
+    <p class="mt-3 text-lg text-slate-700"><%= @mentor.headline %></p>
+    <p class="mt-6 whitespace-pre-line text-slate-700"><%= @mentor.bio %></p>
+    <div class="mt-6 flex flex-wrap gap-2">
+      <% @mentor.skills.each do |skill| %>
+        <span class="rounded-sm border border-slate-900/10 bg-white px-2 py-1 text-xs font-medium"><%= skill.name %></span>
+      <% end %>
+    </div>
+    <p class="mt-6 text-2xl font-semibold text-[#1f6b4a]"><%= format_money(@mentor.hourly_rate_cents, @mentor.currency) %> <span class="text-base font-normal text-slate-600">/ session</span></p>
+  </section>
+
+  <section class="border border-slate-900/10 bg-white/70 p-5">
+    <h2 class="text-2xl" style="font-family: Fraunces, serif;">Open slots</h2>
+    <% if @slots.any? %>
+      <ul class="mt-4 space-y-3">
+        <% @slots.each do |slot| %>
+          <li class="flex flex-col gap-3 border border-slate-900/10 bg-[#f8f5ee] p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="font-medium"><%= l(slot.starts_at, format: :long) %></p>
+              <p class="text-sm text-slate-600"><%= slot.duration_minutes %> minutes</p>
+            </div>
+            <% if signed_in? %>
+              <%= button_to "Book", bookings_path(availability_slot_id: slot.id), method: :post, class: "rounded-sm bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-800" %>
+            <% else %>
+              <p class="text-sm text-slate-600">Sign in to book</p>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-4 text-sm text-slate-600">No open slots right now.</p>
+    <% end %>
+  </section>
+</div>
+
+<% if @reviews.any? %>
+  <section class="mt-12">
+    <h2 class="text-2xl" style="font-family: Fraunces, serif;">Reviews</h2>
+    <ul class="mt-4 space-y-3">
+      <% @reviews.each do |review| %>
+        <li class="border border-slate-900/10 bg-white/60 p-4">
+          <p class="font-medium"><%= review.rating %>/5 · <%= review.reviewer.display_name %></p>
+          <p class="mt-1 text-sm text-slate-700"><%= review.body %></p>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

@@ -1,0 +1,24 @@
+<% content_for :title, "Booking ##{@booking.id} — Orbit" %>
+
+<div class="max-w-2xl">
+  <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#1f6b4a]">Booking</p>
+  <h1 class="mt-2 text-4xl" style="font-family: Fraunces, serif;"><%= @booking.mentor_user.display_name %> × <%= @booking.learner.display_name %></h1>
+  <div class="mt-4"><%= booking_status_badge(@booking.status) %></div>
+
+  <dl class="mt-8 space-y-3 text-sm">
+    <div class="flex justify-between border-b border-slate-900/10 py-2">
+      <dt class="text-slate-600">When</dt>
+      <dd class="font-medium"><%= l(@booking.starts_at, format: :long) %></dd>
+    </div>
+    <div class="flex justify-between border-b border-slate-900/10 py-2">
+      <dt class="text-slate-600">Amount</dt>
+      <dd class="font-medium"><%= format_money(@booking.amount_cents, @booking.currency) %></dd>
+    </div>
+    <div class="flex justify-between border-b border-slate-900/10 py-2">
+      <dt class="text-slate-600">Video</dt>
+      <dd><%= link_to "Open Meet link", @booking.meet_url, target: "_blank", rel: "noopener", class: "underline" %></dd>
+    </div>
+  </dl>
+
+  <%= link_to "Enter live room", booking_room_path(@booking), class: "mt-8 inline-block rounded-sm bg-[#1f6b4a] px-5 py-3 text-sm font-semibold text-white" %>
+</div>

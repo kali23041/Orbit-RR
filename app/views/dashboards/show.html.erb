@@ -1,0 +1,35 @@
+<% content_for :title, "Dashboard — Orbit" %>
+
+<h1 class="text-4xl text-slate-950" style="font-family: Fraunces, serif;">Hey, <%= current_user.display_name %></h1>
+<p class="mt-2 text-slate-600">Your learner bookings<%= " and mentor queue" if @mentor_profile %>.</p>
+
+<section class="mt-10">
+  <h2 class="text-2xl" style="font-family: Fraunces, serif;">Your sessions</h2>
+  <% if @learner_bookings.any? %>
+    <ul class="mt-4 space-y-3">
+      <% @learner_bookings.each do |booking| %>
+        <li class="flex flex-col gap-3 border border-slate-900/10 bg-white/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-semibold"><%= booking.mentor_user.display_name %></p>
+            <p class="text-sm text-slate-600"><%= l(booking.starts_at, format: :long) %></p>
+            <div class="mt-2"><%= booking_status_badge(booking.status) %></div>
+          </div>
+          <div class="flex gap-2">
+            <%= link_to "Details", booking_path(booking), class: "rounded-sm border border-slate-900/15 px-3 py-2 text-sm" %>
+            <%= link_to "Live room", booking_room_path(booking), class: "rounded-sm bg-[#1f6b4a] px-3 py-2 text-sm font-semibold text-white" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mt-4 text-sm text-slate-600">No bookings yet. <%= link_to "Browse mentors", mentors_path, class: "underline" %>.</p>
+  <% end %>
+</section>
+
+<% unless @mentor_profile %>
+  <section class="mt-10 border border-dashed border-slate-900/20 bg-white/40 p-5">
+    <h2 class="text-xl" style="font-family: Fraunces, serif;">Teach on Orbit</h2>
+    <p class="mt-1 text-sm text-slate-600">Publish a mentor profile and open availability slots.</p>
+    <%= link_to "Create mentor profile", new_mentor_profile_path, class: "mt-4 inline-block rounded-sm bg-slate-900 px-4 py-2 text-sm font-semibold text-white" %>
+  </section>
+<% end %>
