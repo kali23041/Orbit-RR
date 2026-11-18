@@ -41,8 +41,8 @@ Rails 8 + Hotwire + Tailwind. SQLite locally (Postgres is fine later). Firebase 
 ## Setup
 
 ```bash
-git clone https://github.com/oraclekartik/RR.git
-cd RR
+git clone https://github.com/kali23041/Orbit-RR.git
+cd Orbit-RR
 cp .env.example .env
 bin/setup
 bin/rails db:seed
@@ -115,7 +115,7 @@ bin/rails test
 
 ## Made by
 
-Kartik Sabale — [kartiksabale.com](https://kartiksabale.com)
+Kartik Sabale · [kartiksabale.com](https://kartiksabale.com) · [hello@kartiksabale.com](mailto:hello@kartiksabale.com)
 
 ## License
 
